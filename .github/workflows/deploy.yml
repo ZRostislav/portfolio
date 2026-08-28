@@ -23,6 +23,8 @@ jobs:
 
       - name: Install, build, and upload your site
         uses: withastro/action@v3
+        with:
+          node-version: 22
         # Alternative to the official action, if you prefer manual steps:
         # - uses: actions/setup-node@v4
         #   with:
