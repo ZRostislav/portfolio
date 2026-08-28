@@ -1,0 +1,130 @@
+---
+import { profile } from "../data/content.js";
+import Icon from "./Icon.astro";
+
+const tabs = [
+  { id: "hero", label: "Главная", icon: "home" as const },
+  { id: "skills", label: "Навыки", icon: "sparkle" as const },
+  { id: "projects", label: "Проекты", icon: "folder" as const },
+];
+
+const initials = profile.name
+  .split(" ")
+  .map((w) => w[0])
+  .join("")
+  .toUpperCase();
+---
+
+<!--
+  Левая панель: фиксированная колонка на десктопе, тонкая шапка на
+  мобиле. Аватар + имя сверху, вкладки — единственная навигация по
+  разделам (разделы переключаются JS, без скролла по странице).
+-->
+<aside
+  class="sidebar fixed inset-x-0 top-0 z-40 flex items-center justify-between border-b border-line bg-paper px-5 py-3 lg:inset-y-0 lg:left-0 lg:right-auto lg:w-[240px] lg:flex-col lg:items-stretch lg:justify-start lg:border-b-0 lg:border-r lg:px-6 lg:py-8"
+>
+  <div class="flex min-w-0 items-center gap-3 lg:flex-col lg:items-stretch lg:gap-4">
+    <div class="avatar-wrap relative flex aspect-square w-10 shrink-0 items-center justify-center overflow-hidden bg-accent text-sm font-semibold text-white lg:w-full lg:text-xl">
+      <img
+        src={profile.avatar}
+        alt={profile.name}
+        class="avatar-img absolute inset-0 h-full w-full object-cover object-[50%_22%]"
+        loading="eager"
+        onerror="this.remove()"
+      />
+      <span class="avatar-fallback">{initials}</span>
+    </div>
+    <div class="min-w-0">
+      <p class="truncate text-sm font-semibold text-ink lg:text-base lg:whitespace-normal">{profile.name}</p>
+      <p class="hidden text-xs text-ink-dim lg:block">{profile.role}</p>
+    </div>
+  </div>
+
+  <nav aria-label="Навигация по разделам" class="flex items-center gap-1 lg:mt-10 lg:flex-col lg:items-stretch lg:gap-1">
+    {tabs.map((tab) => (
+      <button
+        type="button"
+        class="tab-link group flex h-10 w-10 items-center justify-center border border-transparent text-ink-dim transition-colors duration-150 hover:border-line hover:text-ink lg:h-auto lg:w-full lg:justify-start lg:gap-3 lg:px-3 lg:py-2"
+        data-target={tab.id}
+        aria-label={tab.label}
+      >
+        <Icon name={tab.icon} class="tab-icon h-[18px] w-[18px] shrink-0" />
+        <span class="hidden text-sm font-medium lg:inline">{tab.label}</span>
+      </button>
+    ))}
+  </nav>
+
+  <div class="hidden lg:mt-auto lg:block lg:space-y-4 lg:pt-8">
+    <p class="text-xs text-ink-faint">{profile.location}</p>
+    <div class="theme-switch flex items-center gap-1.5 text-xs text-ink-faint">
+      <span>theme:</span>
+      <button type="button" data-theme-btn="dark" class="uppercase tracking-wide">dark</button>
+      <span>/</span>
+      <button type="button" data-theme-btn="light" class="uppercase tracking-wide">light</button>
+    </div>
+  </div>
+</aside>
+
+<style>
+  .tab-link.is-active {
+    background: var(--color-surface);
+    color: var(--color-ink);
+    border-color: var(--color-line);
+  }
+  .tab-link.is-active .tab-icon {
+    color: var(--color-accent);
+  }
+</style>
+
+<script>
+  const links = Array.from(
+    document.querySelectorAll<HTMLButtonElement>(".tab-link")
+  );
+  const panels = Array.from(
+    document.querySelectorAll<HTMLElement>(".panel")
+  );
+
+  function activate(id: string) {
+    links.forEach((l) => l.classList.toggle("is-active", l.dataset.target === id));
+    panels.forEach((p) => p.classList.toggle("is-active", p.id === id));
+    window.scrollTo({ top: 0 });
+    history.replaceState(null, "", `#${id}`);
+  }
+
+  links.forEach((link) => {
+    link.addEventListener("click", () => {
+      const target = link.dataset.target;
+      if (target) activate(target);
+    });
+  });
+
+  // Открываем нужный раздел по якорю в адресной строке (если задан),
+  // иначе — первую вкладку.
+  const initial = window.location.hash.replace("#", "") || links[0]?.dataset.target;
+  if (initial) activate(initial);
+
+  // ---- Переключатель темы ----
+  const themeButtons = Array.from(
+    document.querySelectorAll<HTMLButtonElement>("[data-theme-btn]")
+  );
+
+  function applyTheme(theme: string) {
+    document.documentElement.setAttribute("data-theme", theme);
+    localStorage.setItem("theme", theme);
+    themeButtons.forEach((btn) =>
+      btn.setAttribute("aria-pressed", String(btn.dataset.themeBtn === theme))
+    );
+  }
+
+  themeButtons.forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const theme = btn.dataset.themeBtn || "dark";
+      applyTheme(theme);
+    });
+  });
+
+  const savedTheme =
+    localStorage.getItem("theme") ||
+    (window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark");
+  applyTheme(savedTheme);
+</script>

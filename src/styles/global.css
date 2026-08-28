@@ -1,0 +1,165 @@
+@import "tailwindcss";
+/* Шрифт грузится через Google Fonts <link> в Layout.astro. */
+
+@theme {
+  /* Значения по умолчанию (тёмная тема) — переопределяются в
+     [data-theme="light"] ниже через обычный CSS каскад. */
+  --color-paper: #1a1a1a; /* фон страницы — тёмно-серый (не чёрный) */
+  --color-surface: #212121; /* карточки / панель слева */
+  --color-surface-2: #292929; /* приподнятая поверхность, hover */
+  --color-line: #333333; /* тонкие разделители */
+  --color-line-strong: #454545; /* линии при hover */
+
+  --color-ink: #f2f0ec; /* основной текст — тёплый белый */
+  --color-ink-dim: #a3a099; /* второстепенный текст */
+  --color-ink-faint: #6f6c66; /* самые тихие подписи */
+  --color-black: #000000;
+
+  /* ---- Осенняя палитра: оранжевый — основной акцент, синий — второй ---- */
+  --color-accent: #d9691f; /* жжёный оранжевый — основной */
+  --color-accent-dim: #a34f18;
+  --color-accent-glow: #f08a3c;
+
+  --color-blue: #3a6ea8; /* приглушённый синий — второй акцент */
+  --color-blue-dim: #274a73;
+  --color-blue-glow: #6b98d1;
+
+  /* алиасы для обратной совместимости со старыми классами */
+  --color-ember: var(--color-accent);
+  --color-ember-dim: var(--color-accent-dim);
+  --color-ember-glow: var(--color-accent-glow);
+
+  /* ---- Типографика: только Inter / system-ui, без serif ---- */
+  --font-display:
+    "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-body:
+    "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+
+  /* ---- Строгий стиль: без скруглений нигде ---- */
+  --radius-none: 0px;
+  --radius-sm: 0px;
+  --radius-md: 0px;
+  --radius-lg: 0px;
+  --radius-xl: 0px;
+  --radius-2xl: 0px;
+  --radius-full: 0px;
+}
+
+/* ---- Светлая тема ---- */
+:root[data-theme="light"] {
+  --color-paper: #f4f2ee;
+  --color-surface: #ffffff;
+  --color-surface-2: #ebe8e2;
+  --color-line: #dcd8cf;
+  --color-line-strong: #c3bfb4;
+
+  --color-ink: #1a1a1a;
+  --color-ink-dim: #55524c;
+  --color-ink-faint: #8b8880;
+
+  --color-accent: #c1591a;
+  --color-accent-dim: #96430f;
+  --color-accent-glow: #e07a34;
+
+  --color-blue: #2f5a8a;
+  --color-blue-dim: #1f3f63;
+  --color-blue-glow: #4d7fb8;
+}
+
+html {
+  background: var(--color-paper);
+  scroll-behavior: auto;
+}
+
+body {
+  background: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease;
+}
+
+button {
+  cursor: pointer;
+}
+
+.eyebrow {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-ink-faint);
+}
+
+.section-heading {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-style: normal;
+  color: var(--color-ink);
+}
+
+::selection {
+  background: var(--color-accent);
+  color: var(--color-paper);
+}
+
+a:focus-visible,
+button:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: var(--color-paper);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-line-strong);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-ink-faint);
+}
+
+/* ---- Переключатель разделов (панель слева + вкладки-панели) ---- */
+.panel {
+  display: none;
+}
+.panel.is-active {
+  display: block;
+  animation: panelIn 0.2s ease;
+}
+@keyframes panelIn {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ---- Переключатель темы (theme: dark/light) ---- */
+.theme-switch button[aria-pressed="true"] {
+  color: var(--color-accent);
+  font-weight: 600;
+}

@@ -1,0 +1,493 @@
+---
+// Отдельная, самодостаточная страница резюме — не использует общий Layout,
+// потому что у неё своя вёрстка под печать/PDF (формат A4).
+// Открывается по кнопке «Резюме» в новой вкладке; там же можно
+// распечатать её или сохранить как PDF через системный диалог печати браузера.
+const base = import.meta.env.BASE_URL;
+function asset(path: string) {
+  return `${base}${path.replace(/^\//, "")}`;
+}
+const avatar = asset("images/avatar.jpg");
+---
+
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Резюме — Ростислав Залужец</title>
+<style>
+  @page {
+    size: A4;
+    margin: 0;
+  }
+
+  :root {
+    --sidebar-bg: #1a1a1a;
+    --sidebar-ink: #f2f0ec;
+    --sidebar-ink-dim: #a3a099;
+    --sidebar-line: #3a3a3a;
+
+    --paper: #ffffff;
+    --ink: #1a1a1a;
+    --ink-dim: #55524c;
+    --ink-faint: #8b8880;
+    --line: #dcd8cf;
+
+    --accent: #c1591a;
+    --accent-glow: #e07a34;
+    --blue: #2f5a8a;
+  }
+
+  * {
+    box-sizing: border-box;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+    color-adjust: exact;
+  }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Liberation Sans', 'DejaVu Sans', Arial, sans-serif;
+    color: var(--ink);
+    font-size: 9.3pt;
+    line-height: 1.45;
+    background: #4a4a4a;
+  }
+
+  /* ---------------- TOOLBAR (экран, не печатается) ---------------- */
+  .toolbar {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    display: flex;
+    justify-content: center;
+    gap: 3mm;
+    padding: 4mm;
+    background: #2a2a2a;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.35);
+  }
+  .toolbar button, .toolbar a {
+    display: inline-flex;
+    align-items: center;
+    gap: 2mm;
+    font-family: inherit;
+    font-size: 10pt;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    padding: 2.6mm 5mm;
+    color: #fff;
+    background: var(--accent);
+    text-decoration: none;
+  }
+  .toolbar button:hover, .toolbar a:hover { background: var(--accent-glow); }
+  .toolbar a.secondary {
+    background: transparent;
+    border: 1px solid #555;
+    color: #ddd;
+  }
+  .toolbar a.secondary:hover { border-color: #888; color: #fff; }
+
+  .print-hint {
+    max-width: 150mm;
+    margin: 3mm auto 0;
+    padding: 2.5mm 4mm;
+    font-size: 8.5pt;
+    line-height: 1.5;
+    text-align: center;
+    color: #cfcac0;
+    background: #2a2a2a;
+    border: 1px solid #444;
+  }
+  .print-hint strong { color: #fff; }
+
+  .page-shell {
+    display: flex;
+    justify-content: center;
+    padding: 8mm 0 14mm;
+  }
+
+  .page {
+    width: 210mm;
+    height: 297mm;
+    display: flex;
+    background: var(--paper);
+    box-shadow: 0 4px 24px rgba(0,0,0,0.4);
+  }
+
+  /* ---------------- SIDEBAR ---------------- */
+  .sidebar {
+    width: 70mm;
+    min-width: 70mm;
+    background: var(--sidebar-bg);
+    color: var(--sidebar-ink);
+    padding: 11mm 8mm;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .photo-wrap {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    overflow: hidden;
+    border: 2px solid var(--accent);
+  }
+  .photo-wrap img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .name {
+    margin-top: 6mm;
+    font-size: 16.5pt;
+    font-weight: 700;
+    color: var(--sidebar-ink);
+    line-height: 1.2;
+  }
+  .role {
+    margin-top: 2mm;
+    font-size: 9.6pt;
+    color: var(--accent-glow);
+    font-weight: 600;
+  }
+  .location {
+    margin-top: 1.5mm;
+    font-size: 8.3pt;
+    color: var(--sidebar-ink-dim);
+  }
+
+  .divider {
+    height: 1px;
+    background: var(--sidebar-line);
+    margin: 5.5mm 0;
+  }
+
+  .eyebrow {
+    font-size: 7.6pt;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--accent-glow);
+    font-weight: 700;
+    margin-bottom: 3mm;
+  }
+
+  .contact-item {
+    display: flex;
+    gap: 2mm;
+    font-size: 8.7pt;
+    color: var(--sidebar-ink);
+    margin-bottom: 2.4mm;
+  }
+  .contact-item .tag {
+    color: var(--sidebar-ink-dim);
+    min-width: 15mm;
+    margin-right: 2mm;
+    font-size: 7.6pt;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    padding-top: 0.3mm;
+  }
+
+  .skill-row {
+    margin-bottom: 2.6mm;
+  }
+  .skill-row .label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 8.4pt;
+    margin-bottom: 1mm;
+    color: var(--sidebar-ink);
+  }
+  .skill-row .label span.pct {
+    color: var(--sidebar-ink-dim);
+    font-size: 7.6pt;
+  }
+  .bar-track {
+    width: 100%;
+    height: 2.4px;
+    background: var(--sidebar-line);
+  }
+  .bar-fill {
+    height: 100%;
+    background: var(--accent);
+  }
+
+  .chip-wrap {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.6mm;
+  }
+  .chip {
+    font-size: 7.4pt;
+    color: var(--sidebar-ink-dim);
+    border: 1px solid var(--sidebar-line);
+    padding: 1mm 2mm;
+  }
+
+  /* ---------------- MAIN ---------------- */
+  .main {
+    flex: 1;
+    padding: 13mm 12mm;
+    background: var(--paper);
+    display: flex;
+    flex-direction: column;
+  }
+
+  .section {
+    margin-bottom: 6mm;
+  }
+  .section-title {
+    font-size: 11.5pt;
+    font-weight: 700;
+    color: var(--ink);
+    padding-bottom: 1.8mm;
+    margin-bottom: 3.5mm;
+    border-bottom: 1.4px solid var(--accent);
+    display: inline-block;
+  }
+
+  .entry {
+    margin-bottom: 4mm;
+  }
+  .entry-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 4mm;
+  }
+  .entry-title {
+    font-size: 9.8pt;
+    font-weight: 600;
+    color: var(--ink);
+  }
+  .entry-org {
+    font-size: 9pt;
+    color: var(--accent);
+    font-weight: 600;
+  }
+  .entry-date {
+    font-size: 8.1pt;
+    color: var(--ink-faint);
+    white-space: nowrap;
+  }
+  .entry ul {
+    margin: 1.8mm 0 0 0;
+    padding-left: 4mm;
+  }
+  .entry ul li {
+    font-size: 8.9pt;
+    color: var(--ink-dim);
+    margin-bottom: 0.9mm;
+  }
+  .entry p.desc {
+    margin: 1.8mm 0 0 0;
+    font-size: 8.9pt;
+    color: var(--ink-dim);
+  }
+
+  .two-col {
+    display: flex;
+    gap: 8mm;
+  }
+  .two-col > div { flex: 1; }
+
+  .quality-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2mm;
+  }
+  .quality-chip {
+    font-size: 8.4pt;
+    color: var(--ink);
+    border: 1px solid var(--line);
+    padding: 1.3mm 2.6mm;
+  }
+
+  .note {
+    font-size: 8.9pt;
+    color: var(--ink-dim);
+  }
+
+  /* ---------------- ПЕЧАТЬ ---------------- */
+  @media print {
+    html {
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+      color-adjust: exact;
+    }
+    .toolbar { display: none !important; }
+    .print-hint { display: none !important; }
+    html, body { background: var(--paper); }
+    .page-shell { padding: 0; }
+    .page { box-shadow: none; }
+  }
+</style>
+</head>
+<body>
+
+  <div class="toolbar">
+    <button type="button" onclick="window.print()">🖨️ Печать / Сохранить как PDF</button>
+    <a href="." class="secondary">← На сайт</a>
+  </div>
+  <div class="print-hint">
+    В окне печати откройте «Дополнительные настройки» → «Параметры» и включите галочку
+    <strong>«Фоновые рисунки» / «Background graphics»</strong>, иначе тёмный сайдбар и цвета не пропечатаются.
+  </div>
+
+  <div class="page-shell">
+  <div class="page">
+
+    <!-- ============ SIDEBAR ============ -->
+    <div class="sidebar">
+      <div class="photo-wrap">
+        <img src={avatar} alt="Фото" />
+      </div>
+
+      <div class="name">Ростислав Залужец</div>
+      <div class="role">Frontend / Web-разработчик</div>
+      <div class="location">Бендеры, Молдова [ПМР]</div>
+
+      <div class="divider"></div>
+
+      <div class="eyebrow">Контакты</div>
+      <div class="contact-item"><span class="tag">Тел.</span><span>+373 777 92 108</span></div>
+      <div class="contact-item"><span class="tag">Портфолио</span><span>zrostislav.github.io</span></div>
+
+      <div class="divider"></div>
+
+      <div class="eyebrow">Скилы</div>
+      <div class="skill-row">
+        <div class="label"><span>HTML</span><span class="pct">100%</span></div>
+        <div class="bar-track"><div class="bar-fill" style="width:100%"></div></div>
+      </div>
+      <div class="skill-row">
+        <div class="label"><span>CSS / SCSS</span><span class="pct">90%</span></div>
+        <div class="bar-track"><div class="bar-fill" style="width:90%"></div></div>
+      </div>
+      <div class="skill-row">
+        <div class="label"><span>JavaScript</span><span class="pct">80%</span></div>
+        <div class="bar-track"><div class="bar-fill" style="width:80%"></div></div>
+      </div>
+      <div class="skill-row">
+        <div class="label"><span>SQL</span><span class="pct">80%</span></div>
+        <div class="bar-track"><div class="bar-fill" style="width:80%"></div></div>
+      </div>
+      <div class="skill-row">
+        <div class="label"><span>TypeScript</span><span class="pct">65%</span></div>
+        <div class="bar-track"><div class="bar-fill" style="width:65%"></div></div>
+      </div>
+      <div class="skill-row">
+        <div class="label"><span>Angular</span><span class="pct">50%</span></div>
+        <div class="bar-track"><div class="bar-fill" style="width:50%"></div></div>
+      </div>
+      <div class="skill-row">
+        <div class="label"><span>Node.js</span><span class="pct">45%</span></div>
+        <div class="bar-track"><div class="bar-fill" style="width:45%"></div></div>
+      </div>
+      <div class="skill-row">
+        <div class="label"><span>React</span><span class="pct">35%</span></div>
+        <div class="bar-track"><div class="bar-fill" style="width:35%"></div></div>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="eyebrow">Владение софтом</div>
+      <div class="chip-wrap">
+        <span class="chip">Git / GitHub</span>
+        <span class="chip">VS Code</span>
+        <span class="chip">Figma</span>
+        <span class="chip">Docker</span>
+        <span class="chip">PostgreSQL</span>
+        <span class="chip">MySQL</span>
+        <span class="chip">Postman</span>
+        <span class="chip">Adobe Photoshop</span>
+        <span class="chip">Vegas Pro</span>
+        <span class="chip">Premiere Pro</span>
+        <span class="chip">OBS Studio</span>
+      </div>
+    </div>
+
+    <!-- ============ MAIN ============ -->
+    <div class="main">
+
+      <div class="section">
+        <div class="section-title">О себе</div>
+        <p class="desc" style="margin-top:0;">Frontend-разработчик с фокусом на HTML, CSS и JavaScript, расширяющий компетенции в Backend-разработке. Студент направления «Информационные системы и программирование» (4-й курс). Имею опыт преподавания IT-дисциплин детям и подросткам, что развило навыки структурирования материала и коммуникации. Дополнительно владею базовыми инструментами графического и видеомонтажа (Adobe Photoshop, Vegas Pro, Premiere Pro).</p>
+        <div class="quality-list" style="margin-top:3.5mm;">
+          <span class="quality-chip">2+ года опыта</span>
+          <span class="quality-chip">41+ проектов</span>
+          <span class="quality-chip">1 коммерческий проект</span>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Опыт работы</div>
+
+        <div class="entry">
+          <div class="entry-head">
+            <div>
+              <span class="entry-title">Коммерческий проект — </span><span class="entry-org">CulturaPMR</span>
+            </div>
+            <div class="entry-date">2024</div>
+          </div>
+          <p class="desc">Разработал сайт для культурного центра ПМР — первый коммерческий проект. Реализовал frontend и backend на React, Node.js, Express и MySQL, адаптивную вёрстку выполнил на Tailwind CSS.</p>
+        </div>
+
+        <div class="entry">
+          <div class="entry-head">
+            <div>
+              <span class="entry-title">Преподаватель — </span><span class="entry-org">Impact Academy</span>
+            </div>
+            <div class="entry-date">2024 — 2026</div>
+          </div>
+          <p class="desc">Провожу занятия по IT-направлениям для детей и подростков 7–17 лет: программирование, 3D-дизайн и графика, робототехника и другие модули. Разрабатываю учебные материалы и адаптирую подачу под разные возрастные группы.</p>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Образование</div>
+        <div class="entry">
+          <div class="entry-head">
+            <div class="entry-title">Бендерский политехнический институт (ГОУ «ПГУ им. Т.Г. Шевченко»)</div>
+            <div class="entry-date">2022 — 2026</div>
+          </div>
+          <p class="desc">Специальность «Информационные системы и программирование». Изучаю основы программирования, проектирование баз данных и разработку программного обеспечения.</p>
+        </div>
+        <div class="entry">
+          <div class="entry-head">
+            <div class="entry-title">Гимназия №3, г. Бендеры</div>
+            <div class="entry-date">2013 — 2022</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="two-col">
+        <div class="section">
+          <div class="section-title">Личные качества</div>
+          <div class="quality-list">
+            <span class="quality-chip">Ответственность</span>
+            <span class="quality-chip">Лидерство</span>
+            <span class="quality-chip">Инициативность</span>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">Недостатки</div>
+          <div class="quality-list">
+            <span class="quality-chip">Перфекционизм в деталях</span>
+            <span class="quality-chip">Требовательность</span>
+            <span class="quality-chip">Эмоциональная вовлечённость</span>
+            <span class="quality-chip">Прямолинейность в высказываниях</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+  </div>
+</body>
+</html>

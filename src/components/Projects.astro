@@ -1,0 +1,67 @@
+---
+import { projects, projectsNote } from "../data/content.js";
+import Icon from "./Icon.astro";
+---
+
+<section id="projects" class="panel px-6 py-16 lg:px-16 lg:py-20">
+  <div class="mx-auto max-w-2xl">
+    <h2 class="section-heading text-lg">Проекты</h2>
+
+    <div class="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2">
+      {projects.map((project) => (
+        <article class="group border border-line transition-colors hover:border-line-strong">
+          <div class="thumb-wrap aspect-video overflow-hidden border-b border-line bg-surface-2">
+            <img
+              src={project.image}
+              alt={project.title}
+              loading="lazy"
+              class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+              onerror="this.closest('.thumb-wrap').remove()"
+            />
+          </div>
+          <div class="p-4">
+            <div class="flex items-start justify-between gap-2">
+              <h3 class="text-sm font-semibold text-ink">{project.title}</h3>
+              {(project.repoUrl || project.liveUrl) && (
+                <div class="flex shrink-0 items-center gap-3">
+                  {project.repoUrl && (
+                    <a
+                      href={project.repoUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label={`Репозиторий проекта ${project.title}`}
+                      class="text-ink-faint transition-colors hover:text-accent"
+                    >
+                      <Icon name="github" class="h-4 w-4" />
+                    </a>
+                  )}
+                  {project.liveUrl && (
+                    <a
+                      href={project.liveUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label={`Открыть проект ${project.title}`}
+                      class="text-ink-faint transition-colors hover:text-accent"
+                    >
+                      <Icon name="arrow-up-right" class="h-4 w-4" />
+                    </a>
+                  )}
+                </div>
+              )}
+            </div>
+            <p class="mt-2 text-sm text-ink-dim">{project.description}</p>
+            <div class="mt-4 flex flex-wrap gap-2">
+              {project.tags.map((tag) => (
+                <span class="border border-line px-2 py-0.5 text-xs text-ink-dim">
+                  {tag}
+                </span>
+              ))}
+            </div>
+          </div>
+        </article>
+      ))}
+    </div>
+
+    <p class="mt-8 text-center text-sm text-ink-faint">{projectsNote}</p>
+  </div>
+</section>

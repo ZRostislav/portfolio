@@ -1,0 +1,71 @@
+---
+import { profile, about, contact, socials } from "../data/content.js";
+import Icon from "./Icon.astro";
+---
+
+<section id="hero" class="panel min-h-screen px-6 py-16 lg:px-16 lg:py-20">
+  <div class="mx-auto max-w-2xl">
+    <!-- Приветствие -->
+    <h1 class="text-2xl font-semibold text-ink">
+      Привет, я {profile.name}.
+    </h1>
+    <p class="mt-4 text-[15px] leading-relaxed text-ink-dim">
+      {profile.tagline}
+    </p>
+
+    <div class="mt-8 flex flex-wrap items-center gap-3">
+      <button
+        type="button"
+        class="tab-link group inline-flex items-center gap-2 bg-accent px-4 py-2 text-sm font-medium text-white transition-opacity hover:opacity-90"
+        data-target="projects"
+      >
+        Смотреть проекты
+        <Icon name="arrow-up-right" class="h-3.5 w-3.5" />
+      </button>
+      <a
+        href="#contact-block"
+        class="inline-flex items-center gap-2 border border-line px-4 py-2 text-sm font-medium text-ink transition-colors hover:border-line-strong hover:bg-surface"
+      >
+        Связаться
+      </a>
+    </div>
+
+    <div class="mt-10 grid grid-cols-3 gap-4 border-t border-line pt-8">
+      {about.stats.map((s) => (
+        <div>
+          <span class="block text-2xl font-semibold text-ink">{s.value}</span>
+          <span class="mt-1 block text-xs text-ink-dim">{s.label}</span>
+        </div>
+      ))}
+    </div>
+
+    <!-- Связь -->
+    <div id="contact-block" class="mt-16 border-t border-line pt-12">
+      <h2 class="section-heading text-lg">Связь</h2>
+      <p class="mt-1 text-sm text-ink-dim">{contact.heading}</p>
+
+      <p class="mt-6 text-sm text-ink-dim">
+        Связаться со мной можно в {socials.map((s, i) => (
+          <>
+            {i > 0 && <span> · </span>}
+            <a href={s.url} target="_blank" rel="noopener noreferrer" class="font-medium text-ink underline decoration-line underline-offset-2 hover:text-blue hover:decoration-blue">
+              {s.label}
+            </a>
+          </>
+        ))}
+      </p>
+
+      <div class="mt-8 flex flex-wrap items-center gap-3">
+        <a
+          href={profile.resumeUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="inline-flex items-center gap-2 border border-line px-4 py-2 text-sm font-medium text-ink transition-colors hover:border-line-strong hover:bg-surface"
+        >
+          <Icon name="download" class="h-4 w-4" />
+          Резюме
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
