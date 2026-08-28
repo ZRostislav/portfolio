@@ -145,6 +145,7 @@ export const projects = [
       "Первый большой проект для поступления в университет. Присутствует регистрация, БД и простые статичные данные. Сайт.",
     image: asset("images/projects/project-4.webp"),
     tags: ["JavaScript", "HTML", "CSS", "PHP"],
+    repoUrl: "https://github.com/ZRostislav/Pint",
   },
   {
     title: "Camp",
@@ -188,6 +189,7 @@ export const projects = [
       "Проект в стиле фэнтези на тематику средневековья на базе Minecraft. Сайт.",
     image: asset("images/projects/project-3.webp"),
     tags: ["JavaScript", "HTML", "CSS"],
+    repoUrl: "https://github.com/ZRostislav/Sword-Gold",
   },
   {
     title: "Lerning",
